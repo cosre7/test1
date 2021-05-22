@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.talat.pms.dao.RiderQnADao">
+  
+  <resultMap id="riderQnAMap" type="riderQnA">
+    <id column="rqno" property="no"/>
+    <result column="rjno" property="rjno"/>
+    <result column="rqdate" property="registeredDate"/>
+    <result column="answ_stat_r" property="status"/>
+    <result column="rqcont" property="qContent"/>
+    <result column="answ_cont_r" property="aContent"/>
+    <result column="rfile" property="file"/>
+    
+    <!-- 여정신청 association -->
+
+    <association property="qtype" javaType="qna">
+      <id column="qna_no" property="no"/>
+      <result column="qna_title" property="typeTitle"/>
+    </association>
+    
+    <association property="writer" javaType="member">
+	    <id column="writer_no" property="mno"/>
+	    <result column="writer_name" property="mname"/>
+    </association>
+    
+    <association property="partner" javaType="member">
+      <id column="partner_no" property="mno"/>
+      <result column="partner_name" property="mname"/>
+    </association>
+    
+  </resultMap>
+  
+  <insert id="insert" parameterType="riderQnA">
+    insert into talat_qna_rider(qno,qtitle,rjno,rqcont,rfile) 
+    values(#{qtype.no},#{qtype.typeTitle},#{rjno},#{qContent},#{file})
+  </insert>
+
+  <select id="findAll" resultMap="riderQnAMap">
+    select
+      rq.rqno,
+      rq.rqdate,
+      rq.answ_stat_r,
+      rq.rfile,
+      q.qno as qna_no,
+      q.qtitle as qna_title,
+      rm.mno as writer_no,
+      rm.mname as writer_name,
+      dm.mno as partner_no,
+      dm.mname as partner_name
+    from talat_qna_rider rq
+    inner join talat_qna q on rq.qno=q.qno
+      inner join talat_journey_rider rj on rq.rjno=rj.rjno
+      inner join talat_memb rm on rj.mno=rm.mno
+      inner join talat_journey j on rj.jno=j.jno
+      inner join talat_memb dm on j.mno=dm.mno 
+    order by rq.rqno desc
+  </select>
+  
+  <select id="findByKeyword" resultMap="riderQnAMap" parameterType="string">
+ 
+  </select>
+  
+  <select id="findByNo" resultMap="riderQnAMap" parameterType="int">
+    select
+      rq.rqno,
+      rq.rqdate,
+      rq.answ_stat_r,
+      rq.rqcont,
+      rq.answ_cont_r,
+      rq.rfile,
+      q.qno as qna_no,
+      q.qtitle as qna_title,
+      rm.mno as writer_no,
+      rm.mname as writer_name,
+      dm.mno as partner_no,
+      dm.mname as partner_name 
+    from talat_qna_rider rq
+    inner join talat_qna q on rq.qno=q.qno
+      inner join talat_journey_rider rj on rq.rjno=rj.rjno
+      inner join talat_memb rm on rj.mno=rm.mno
+      inner join talat_journey j on rj.jno=j.jno
+      inner join talat_memb dm on j.mno=dm.mno 
+    where rq.rqno = #{value}
+  </select>
+  
+  <update id="update" parameterType="riderQnA">
+    update talat_qna_rider set
+        qno = #{qtype.no},
+        qtitle = #{qtype.typeTitle},
+        rqcont = #{qContent},
+        rfile = #{file}
+    where rqno = #{no}
+  </update>
+  
+  <update id="managerUpdate" parameterType="riderQnA">
+    update talat_qna_rider set
+        answ_cont_r = #{aContent},
+        answ_stat_r = #{status}
+    where rqno = #{no}
+  </update>
+  
+  <delete id="delete" parameterType="int">
+    delete from talat_qna_rider 
+    where rqno = #{value}
+  </delete>
+
+</mapper>
+
+
+
+
+
+
+

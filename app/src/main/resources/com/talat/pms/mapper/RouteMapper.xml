@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.talat.pms.dao.RouteDao">
+  
+  <resultMap id="routeMap" type="route">
+    <id column="rno" property="rno"/>
+    <result column="spot_order" property="spotOrder"/>
+    <result column="lat" property="latitude"/>
+    <result column="lng" property="longitude"/>
+    <result column="spot_name" property="spotName"/>
+    <result column="spot_time" property="spotTime"/>    
+  
+  <association property="jno" javaType="journey">
+      <id column="journey_no" property="jno"/>
+    </association>
+  </resultMap>
+  
+  <insert id="insert" parameterType="route">
+    insert into talat_journey_route(jno,lat,lng,spot_name,spot_time) 
+    values(#{jno},#{latitude},#{longitude},#{spotName},#{spotTime})
+  </insert>
+
+  <select id="findByNo" resultMap="routeMap" parameterType="int">
+    select
+      r.rno,
+      r.lat,
+      r.lng,
+      r.spot_name,
+      r.spot_time,
+      j.jno as journey_no
+    from talat_journey_route r
+      inner join talat_journey j on r.jno=j.jno
+    where r.rno = #{value}
+  </select>
+  
+  <select id="findByKeyword" resultMap="routeMap" parameterType="string">
+    select
+      r.rno,
+      r.lat,
+      r.lng,
+      r.spot_name,
+      r.spot_time,
+      j.jno as journey_no
+    from talat_journey_route r
+      inner join talat_journey j on r.jno=j.jno
+    
+    <if test="value != null">
+    where 
+      r.lat like concat('%', #{value},'%')
+      and r.lng like concat('%', #{value},'%')
+    </if>
+    order by r.rno desc
+  </select>
+  
+  <update id="update" parameterType="route">
+    update talat_journey_route set
+        lat = #{latitude}, 
+        lng = #{longitude}, 
+        spot_name = #{spotName}, 
+        spot_time = #{spotTime}
+    where rno = #{rno}
+  </update>
+  
+  <delete id="delete" parameterType="int">
+    delete from talat_journey_route
+    where rno = #{value}
+  </delete>
+
+</mapper>
+
+
+
+
+
+
+

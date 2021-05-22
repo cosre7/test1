@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.talat.pms.dao.JourneyDao">
+  
+  <resultMap id="journeyMap" type="journey">
+    <id column="jno" property="jno"/>
+    <result column="dept" property="departure"/>
+    <result column="arr" property="arrival"/>
+    <result column="jdate" property="journeyDate"/>
+    <result column="jtime" property="journeyTime"/>
+    <result column="seat_psgr_cap" property="seatPassenger"/>
+    <result column="seat_rear_cap" property="seatRear"/>
+    <result column="pet" property="pet"/>
+    <result column="jfee" property="fee"/>
+    <result column="jcont" property="content"/>
+    
+    <association property="driver" javaType="member">
+	    <id column="driver_no" property="mno"/>
+	    <result column="driver_name" property="mname"/>
+    </association>
+    
+  </resultMap>
+  
+  <insert id="insert" parameterType="journey">
+    insert into talat_journey(dept,arr,jdate,jtime,seat_psgr_cap,seat_rear_cap,pet,jfee,jcont,mno) 
+    values(#{departure},#{arrival},#{journeyDate},#{journeyTime},#{seatPassenger},#{seatRear},#{pet},#{fee},#{content},#{driver.no})
+  </insert>
+
+<select id="findAll" resultMap="journeyMap">
+    select
+      j.jno,
+      j.dept,
+      j.arr,
+      j.jdate,
+      j.jtime,
+      m.mno as driver_no,
+      m.mname as driver_name
+    from talat_journey j
+      inner join talat_memb m on j.mno=m.mno
+    order by j.jno desc
+  </select>
+  
+  <select id="findByKeyword" resultMap="journeyMap" parameterType="string">
+    select
+      j.jno,
+      j.dept,
+      j.arr,
+      j.jdate,
+      j.jtime,
+      m.mno as driver_no,
+      m.mname as driver_name
+    from talat_journey j
+      inner join talat_memb m on j.mno=m.mno
+    
+    <if test="value != null">
+    where 
+      j.dept like concat('%', #{value},'%')
+      and j.arr like concat('%', #{value},'%')
+      and j.jdate like concat('%', #{value},'%')
+      and j.jtime like concat('%', #{value},'%')
+    </if>
+    order by j.jno desc
+  </select>
+  
+  <select id="findByNo" resultMap="journeyMap" parameterType="int">
+    select
+      j.jno,
+      j.dept,
+      j.arr,
+      j.jdate,
+      j.jtime,
+      j.seat_psgr_cap,
+      j.seat_rear_cap,
+      j.pet,
+      j.jfee,
+      j.jcont,
+      m.mno as driver_no,
+      m.mname as driver_name
+    from talat_journey j
+      inner join talat_memb m on j.mno=m.mno
+    where j.jno = #{value}
+  </select>
+  
+  <update id="update" parameterType="journey">
+    update talat_journey set
+        dept = #{departure}, 
+        arr = #{arrival}, 
+        jdate = #{journeyDate}, 
+        jtime = #{journeyTime}, 
+        seat_psgr_cap = #{seatPassenger},
+        seat_rear_cap = #{seatRear},
+        pet = #{pet},
+        jfee = #{fee},
+        jcont = #{content}
+    where jno = #{jno}
+  </update>
+  
+  <delete id="delete" parameterType="int">
+    delete from talat_journey
+    where jno = #{value}
+  </delete>
+
+</mapper>
+
+
+
+
+
+
+

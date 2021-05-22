@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.talat.pms.dao.MemberDao2">
+
+  <resultMap id="userMemberMap" type="member">
+    <id column="mno" property="mno"/>
+    <result column="nic" property="nicName"/>
+    <result column="gender" property="gender"/>
+    <result column="pst_no" property="postNo"/>
+    <result column="basic_addr" property="basicAddress"/>
+    <result column="det_addr" property="detailAddress"/>
+    <result column="prof" property="profile"/>
+    <result column="pref_gender" property="preference_gender"/>
+    <result column="mrdt" property="registeredDate"/>
+    <result column="star_avg" property="starAverage"/>
+  </resultMap>
+  
+  <insert id="insert" parameterType="member">
+    insert into talat_memb(nic,gender,pst_no,basic_addr,det_addr,prof
+                          ,pref_gender,mrdt,star_avg)
+    values(#{nicName}, #{gender}, password(#{postNo}), #{basicAddress}, #{detailAddress}
+          , #{profile}, #{preference_gender}, #{registeredDate}, #{starAverage})
+  </insert>
+  
+  <select id="findAll" resultMap="userMemberMap">
+    select 
+      tm.mno,
+      tm.mname,
+      tm.email,
+      tm.tel,
+      tm.birth,
+      tm.mtype,
+      tj.nic,
+      tj.gender,
+      tj.pst_no,
+      tj.basic_addr,
+      tj.det_addr,
+      tj.prof,
+      tj.pref_gender,
+      tj.mrdt,
+      tj.star_avg
+    from talat_memb tm
+      left outer join talat_join tj on tm.mno=tj.mno
+    order by tm.mno asc
+  </select>
+ 
+</mapper>
+
+
+
+
+
+
+

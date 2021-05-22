@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.talat.pms.dao.JoinDao">
+  
+  <resultMap id="joinMap" type="join">
+    <id column="mno" property="no"/>
+    <result column="nic" property="nicName"/>
+    <result column="gender" property="gender"/>
+    <result column="pst_no" property="postNo"/>
+    <result column="basic_addr" property="basicAddress"/>
+    <result column="det_addr" property="detailAddress"/>
+    <result column="prof" property="profile"/>
+    <result column="pref_gender" property="preferenceGender"/>
+    <result column="mrdt" property="registeredDate"/>
+    <result column="star_avg" property="starAverage"/>
+  </resultMap>
+  
+  <insert id="insert" parameterType="join">
+    insert into talat_join(mno,nic,gender,pst_no,basic_addr,det_addr,prof,pref_gender,mrdt,star_avg) 
+    values(#{no}, #{nicName}, #{gender}, #{postNo}, #{basicAddress}, #{detailAddress}, #{profile}, #{preferenceGender}, #{registeredDate}, #{starAverage})
+  </insert>
+  
+  <select id="findAll" resultMap="memberMap">
+    select 
+      mno,
+      nic,
+      gender,
+      star_avg 
+    from talat_join
+    order by nic asc
+  </select>
+  
+  <select id="findByNo" resultMap="joinMap" parameterType="int">
+    select 
+      nic,
+      gender,
+      pst_no,
+      basic_addr,
+      det_addr,
+      prof,
+      pref_gender,
+      mrdt,
+      star_avg
+    from talat_join
+    where mno = #{value}
+  </select>
+  
+  <update id="update" parameterType="join">
+    update talat_join
+    <set> 
+      <if test="name != ''">nic=#{nicName},</if>
+      <if test="postNo != ''">pst_no=#{postNo},</if>
+      <if test="basicAddress != ''">basic_addr=#{basicAddress},</if>
+      <if test="detailAddress != ''">det_addr=#{detailAddress}</if> 
+      <if test="proFile != ''">prof=#{proFile}</if>
+      <if test="preferenceGender != ''">pref_gender=#{preferenceGender}</if> 
+    </set>
+    where mno=#{no}
+  </update>
+  
+  <delete id="delete" parameterType="int">
+    delete from talat_join
+    where mno=#{value}
+  </delete>
+
+</mapper>
+
+
+
+
+
+
+

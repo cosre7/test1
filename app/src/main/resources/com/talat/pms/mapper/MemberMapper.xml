@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.talat.pms.dao.MemberDao">
+
+  <resultMap id="memberMap" type="member">
+    <id column="mno" property="mno"/>
+    <result column="mname" property="mname"/>
+    <result column="email" property="email"/>
+    <result column="pwd" property="password"/>
+    <result column="tel" property="tel"/>
+    <result column="birth" property="birth"/>
+    <result column="mtype" property="mType"/>
+    <result column="nic" property="nicName"/>
+    <result column="gender" property="gender"/>
+    <result column="pst_no" property="postNo"/>
+    <result column="basic_addr" property="basicAddress"/>
+    <result column="det_addr" property="detailAddress"/>
+    <result column="prof" property="profile"/>
+    <result column="pref_gender" property="preferenceGender"/>
+    <result column="mrdt" property="registeredDate"/>
+    <result column="star_avg" property="starAverage"/>
+  </resultMap>
+  
+  <insert id="insert1" parameterType="member"
+        useGeneratedKeys="true" keyColumn="mno" keyProperty="mno">
+    insert into talat_memb(mname,email,pwd,tel,birth,mtype)
+    values(#{mname}, #{email}, password(#{password}), #{tel}, #{birth}, #{mType})
+  <selectKey keyProperty="mno" resultType="int" order="AFTER">
+   SELECT LAST_INSERT_ID()
+  </selectKey>
+  </insert>
+  
+    <insert id="insert2" parameterType="member">
+    insert into talat_join(mno, nic, gender, pst_no, basic_addr, det_addr, prof, pref_gender, star_avg)
+    values(#{mno}, #{nicName}, #{gender}, #{postNo}, #{basicAddress}, #{detailAddress}
+          , #{profile}, #{preferenceGender}, #{starAverage})
+  </insert>
+  
+  <select id="findAll" resultMap="memberMap" parameterType="string">
+    select 
+      tm.mno,
+      tm.mname,
+      tm.email,
+      tm.tel,
+      tm.birth,
+      tm.mtype,
+      tj.nic,
+      tj.gender,
+      tj.pst_no,
+      tj.basic_addr,
+      tj.det_addr,
+      tj.prof,
+      tj.pref_gender,
+      tj.mrdt,
+      tj.star_avg
+    from talat_memb tm
+      left outer join talat_join tj on tm.mno=tj.mno
+    order by tm.mno asc
+  </select>
+ 
+   <select id="findByEmailPassword" resultMap="memberMap" parameterType="map">
+    select 
+      mno,
+      mname,
+      email
+    from talat_memb
+    where email = #{email} and pwd = password(#{password})
+  </select>
+ 
+</mapper>
+
+
+
+
+
+
+

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>회원가입</title>
+</head>
+<body>
+<h1>회원가입</h1>
+<form action='add2' method='get'>
+    이름<br>
+    <input type='text' name='mname'><br>
+    이메일<br>
+    <input type='text' name='email'><br>
+    비밀번호<br>
+    <input type='text' name='password'><br>
+    전화번호<br>
+    <input type='text' name='tel' placeholder="-를 제외하고 입력하세요"><br>
+    생년월일<br>
+    <input type='date' name='birth'><br>
+    타입선택<br>
+    <input type='password' name='gender' placeholder="드라이버(1), 라이더(2)"><br>
+    닉네임<br>
+    <input type='text' name='nicName'><br>
+    성별<br>
+    <input type='password' name='gender' placeholder="남자는(1), 여자는(2)"><br>
+    우편번호<br>
+    <input type='text' name='postNo'><br>
+    기본주소<br>
+    <input type='text' name='basicAddress'><br>
+    상세주소<br>
+    <input type='text' name='detailAddress'><br>
+    프로필사진 등록<br>
+    <input type='file' name='profile' accept="image/*">
+    <p style="color:red;">주의_얼굴이 나온 사진첨부</p><br>
+    선호성별<br>
+    <input type='text' name='preference_gender' placeholder="남자는(1), 여자는(2)"><br>
+    <input type='submit' value='등록'>
+</form>
+</body>
+</html>
