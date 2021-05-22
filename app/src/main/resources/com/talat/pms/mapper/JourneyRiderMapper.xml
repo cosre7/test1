@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.talat.pms.dao.JourneyRiderDao">
+  
+  <resultMap id="journeyRiderMap" type="journeyRider">
+    <id column="rjno" property="journeyRiderNo"/>
+    <result column="mstat" property="machingStatus"/>
+    <result column="mcont" property="machingContent"/>
+    <result column="dstar" property="driverStar"/>
+    <result column="rstar" property="riderStar"/>
+    
+    <association property="journey" javaType="journey">
+      <id column="jno" property="jno"/>
+      <result column="jno_dept" property="departure"/>
+      <result column="jno_arr" property="arrival"/>
+      <result column="jno_jfee" property="fee"/>
+      <result column="jno_jdate" property="journeyDate"/>
+      <result column="jno_jtime" property="journeyTime"/>
+    </association>
+    
+    <association property="driver" javaType="member">
+      <id column="driver_mno" property="mno"/>
+      <result column="driver_mname" property="mname"/>
+      <result column="driver_star" property="starAverage"/>
+    </association>
+    
+    <association property="route" javaType="route">
+      <id column="rno" property="rno"/>
+      <result column="route_name" property="spotName"/>
+      <result column="route_order" property="spotOrder"/>
+    </association>
+    
+  </resultMap>
+  
+  <!-- 카풀신청 -->
+  <insert id="insert" parameterType="journeyRider">
+    insert into talat_journey_rider(journey,driver,mstat,mcont,dstar,rstar) 
+    values(#{journey.jno},#{driver.mno},#{machingStatus},#{machingContent},#{driverStar},#{riderStar})
+  </insert>
+
+  <!-- 나의 여정 내역(list) -->
+  <select id="findAll" resultMap="journeyRiderMap">
+    select
+      jr.rjno,
+      j.jno,
+      j.dept as jno_dept,
+      j.arr as jno_arr,
+      j.jfee as jno_jfee,
+      j.jdate as jno_jdate,
+      j.jtime as jno_jtime,
+      m.mno as driver_mno,
+      m.mname as driver_mname
+    from talat_journey_rider jr
+      inner join talat_journey j on jr.jno=j.jno
+      inner join talat_memb m on jr.mno=m.mno
+    order by jr.rjno desc 
+  </select>
+  
+  <!-- 여정 신청(search) -->
+  <select id="findByKeyword" resultMap="journeyRiderMap" parameterType="map">
+    select 
+		  t1.jno t1_jno,
+		  t2.jno t2_jno,
+		  t1.rno t1_rno,
+		  t1.spot_name t1_spot_name,
+		  t2.rno t2_rno,
+		  t2.spot_name t2_spot_name,
+		  j.jno,
+		  j.jdate as jno_jdate,
+		  j.jtime as jno_jtime,
+		  m.mno as driver_mno,
+      m.mname as driver_mname,
+      rj.rno,
+      rj.spot_name as route_name,
+      rj.spot_order as route_order
+		from 
+		(
+		select  
+		  rno,
+		  jno,
+		  spot_order,
+		  lat,
+		  lng,
+		  spot_name,
+		  spot_time
+		from talat_journey_route
+		where spot_order=1
+		) as t1
+		,
+		(
+		select  
+		  rno,
+		  jno,
+		  spot_order,
+		  lat,
+		  lng,
+		  spot_name,
+		  spot_time
+		from talat_journey_route
+		where spot_order > 1
+		) as t2
+		, talat_journey j
+		, talat_memb m
+		, talat_journey_route rj
+		where t1.jno = t2.jno 
+		and t1.jno=j.jno
+		and j.mno=m.mno
+		and rj.jno=j.jno
+	  and t1.spot_name like concat('%', #{keyword1}, '%')
+	  and t2.spot_name like concat('%', #{keyword2}, '%')
+	  and j.jdate like concat(#{keyword3})
+	  and j.jtime like concat(#{keyword4})
+  </select>
+
+  <select id="findByNo" resultMap="journeyRiderMap" parameterType="int">
+    select
+      jr.rjno,
+      m.mno as driver_mno,
+      m.mname as driver_mname,
+      j.jno,
+      j.jdate as jno_jdate,
+      j.jtime as jno_jtime,
+      j.jfee as jno_jfee,
+      j.dept as jno_dept,
+      j.arr as jno_arr,
+      r.rno,
+      r.spot_name as route_spot
+     from talat_journey_rider jr
+      inner join talat_journey j on jr.jno=j.jno
+      inner join talat_memb m on jr.mno=m.mno
+      inner join talat_journey_route r on jr.jno=r.jno
+     where jr.rjno = #{value}
+  </select>
+  <!-- 여정 변경 -->
+  <!-- 
+  <update id="update" parameterType="journeyRider">
+    update talat_journeyRider set
+        jno = #{journeyRiderNo}, 
+        mno = #{riderNo}
+        mstat = #{machingStatus},
+        mcont = #{machingContent},
+        dstar = #{driverStar},
+        rstar = #{riderStar}
+    where rjno = #{rjno}
+  </update>
+  -->
+  
+  <!-- 신청 여정 삭제 -->
+  <delete id="delete" parameterType="int">
+    delete from talat_journey_rider 
+    where rjno = #{value}
+  </delete>
+  
+  <insert id="insertJourney" parameterType="map">
+    insert into talat_journey_rider(rjno, jno)
+    values(#{journeyRiderNo}, #{journeyNo})
+  </insert>
+  
+  <delete id="deleteJourney" parameterType="int">
+    delete from talat_journey_rider 
+    where jno = #{value}
+  </delete>
+</mapper>
+
+
+
+
+
+
+
